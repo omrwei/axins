@@ -1,0 +1,11 @@
+ZT状态！$.$！/mnt/docker_disk/mi_docker/docker-binaries/docker exec zerotier-one zerotier-cli listnetworks
+LED开关！$.$！/etc/init.d/miled help
+SMB开关！$.$！echo `/bin/netstat -anp |/bin/grep smbd&& /etc/init.d/samba stop || /etc/init.d/samba start>/dev/null` | /bin/grep smbd&&echo 已关闭|| echo SMB已开启
+系统信息！$.$！cat /proc/cpuinfo
+UCI信息！$.$！uci show
+环境！$.$！env
+alist开关！$.$！echo `/bin/netstat -anp |/bin/grep alist&& /extdisks/sda1/alist/alist stop || /extdisks/sda1/alist/alist start>/dev/null` | /bin/grep alist&&echo 已关闭|| echo alist已开启
+磁盘信息！$.$！df
+rtty开启！$.$！rtty -I xiaowei -h localhost -p 5912 -a -v -d MI_LYQ -D
+重启！$.$！reboot
+USB修复！$.$！ln -snf `lsblk | egrep sd | egrep :2 | awk {print }` /sda2

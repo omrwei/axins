@@ -1,0 +1,71 @@
+#!/bin/sh
+#----------------------------------------------------------------
+# Shell Name：axinstall
+# Description：Plug-in install script
+# Author：axins
+# Version: 1.0.1
+# Setup Address: axinsinstall.sh
+#----------------------------------------------------------------*/
+
+mount -o remount,rw /
+
+## Check The Router Hardware Model
+model=$(cat /proc/xiaoqiang/model)
+
+if [ "$model" == "AX3000" -o "$model" == "AX6000" ];then
+	MIWIFIPATH="/etc/axins"
+elif [ "$model" == "RA70" ];then
+	MIWIFIPATH="$(ls /etc/axins/scripts/axinsinstall 2>/dev/null | sed 's/\/scripts\/axinsinstall//' | awk '{print;exit}')"
+	if [ -d "$MIWIFIPATH" ];then
+		MIWIFIPATH="/etc/axins"
+	else
+		MIWIFIPATH="$(ls /extdisks/sd*/axins/scripts/axinsinstall 2>/dev/null | sed 's/\/scripts\/axinsinstall//' | awk '{print;exit}')"
+		if [ ! -d "$MIWIFIPATH" ];then
+			echo "未找到目录，退出...";
+			return 1;
+		fi
+	fi
+elif [ "$model" = "R1CM" ];then
+	if [ $(df|grep -Ec '\/extdisks\/sd[a-z][0-9]?$') -eq 0 ];then
+		echo "未找到外置存储设备，退出..."
+		return 1
+	else
+		MIWIFIPATH="$(ls /extdisks/sd*/axins/scripts/axinsinstall 2>/dev/null | sed 's/\/scripts\/axinsinstall//' | awk '{print;exit}')"
+		[ -z $MIWIFIPATH ] && {
+			echo "未找到目录，退出...";
+			return 1;
+		}
+	fi
+else
+        echo "暂不支持您的路由器。"
+        return 1
+fi
+
+if [ "$MIWIFIPATH" != "/etc/axins" ]; then
+	rm -rf /etc/axins
+	ln -s $MIWIFIPATH /etc/
+fi
+
+#原网页目录
+WEBPATH1="/usr/lib/lua/luci/view/web"
+#原脚本目录
+LUAPATH1="/usr/lib/lua/luci/controller"
+#新网页目录
+WEBPATH2="/etc/axins/view/web"
+#新脚本目录
+LUAPATH2="/etc/axins/controller"
+
+#新增web和api,替换系统文件并备份
+mv $WEBPATH1/sysauth.htm $WEBPATH1/sysauth.axinbak
+mv $WEBPATH2/inc/header.htm $WEBPATH2/inc/header.axinbak
+
+ln -s $WEBPATH2/sysauth.htm $WEBPATH1/sysauth.htm >/dev/null 2>&1
+ln -s $WEBPATH2/inc/header.htm $WEBPATH1/inc/header.htm >/dev/null 2>&1
+ln -s $LUAPATH2/api/axins.lua $LUAPATH1/api/axins.lua >/dev/null 2>&1
+ln -s $LUAPATH2/web/axind.lua $LUAPATH1/web/axind.lua >/dev/null 2>&1
+
+rm -rf /tmp/luci-modulecache/* /tmp/luci-index
+
+
+
+

@@ -1,0 +1,1053 @@
+<%
+    -- 编辑mac配置
+    -- local box_url = luci.http.getenv("REQUEST_URI")
+    -- local box_url = luci.http.urldecode(box_url)
+    local mac = luci.http.formvalue ("mac")
+    luci.sys.exec("touch /usr/lib/lua/luci/view/mac.htm")
+    local machtm = luci.sys.exec("cat /tmp/dhcp.leases")
+    machtm = string.gsub(machtm, "\r\n", "!@.@!")
+    machtm = string.gsub(machtm, "\n", "!@.@!")
+    machtm = string.gsub(machtm, " ", "！$.$！")
+    local machtm2 = luci.sys.exec("cat /usr/lib/lua/luci/view/mac.htm")
+    machtm2 = string.gsub(machtm2, "\r\n", "!@.@!")
+    machtm2 = string.gsub(machtm2, "\n", "!@.@!")
+
+    if mac=="add" then
+        local title = luci.http.formvalue ("title")
+        local macc = luci.http.formvalue ("macc")
+        local ID = luci.http.formvalue ("ID")
+        if ID == "*" then
+            luci.sys.exec("echo '"..title.."！$.$！"..macc.."' >> /usr/lib/lua/luci/view/mac.htm")
+            luci.http.write("<meta http-equiv=\"refresh\" content=\"0; URL='"..REQUEST_URI.."'\" />")
+            luci.http.close()
+        end
+    end
+
+    if mac=="del" then
+        local ID = luci.http.formvalue ("ID")
+        luci.sys.exec("sed -i '"..ID.."d' /usr/lib/lua/luci/view/mac.htm")
+        luci.http.write("<meta http-equiv=\"refresh\" content=\"0; URL='"..REQUEST_URI.."'\" />")
+        luci.http.close()
+    end
+
+
+    -- 编辑box配置
+    -- local box_url = luci.http.getenv("REQUEST_URI")
+    -- local box_url = luci.http.urldecode(box_url)
+    local box = luci.http.formvalue ("box")
+    luci.sys.exec("touch /usr/lib/lua/luci/view/box.htm")
+    local boxhtm = luci.sys.exec("cat /usr/lib/lua/luci/view/box.htm")
+    boxhtm = string.gsub(boxhtm, "\r\n", "!@.@!")
+    boxhtm = string.gsub(boxhtm, "\n", "!@.@!")
+
+
+    if box=="add" then
+        local title = luci.http.formvalue ("title")
+        local hert = luci.http.formvalue ("hert")
+        local ID = luci.http.formvalue ("ID")
+
+        -- 禁止特殊符号
+        title = string.gsub(title, "%s+", "")
+        title = string.gsub(title, "<", "")
+        title = string.gsub(title, ">", "")
+        title = string.gsub(title, "！", "")
+        title = string.gsub(title, "\"", "")
+        title = string.sub(title, 1, 8)
+
+        hert = string.gsub(hert, "%s+", "")
+        hert = string.gsub(hert, "<", "")
+        hert = string.gsub(hert, ">", "")
+        hert = string.gsub(hert, "！", "")
+        hert = string.gsub(hert, "\"", "")
+        local exec
+        if ID ~= "*" then
+            luci.sys.exec("sed -i '"..(ID).." i "..title.."！$.$！"..hert.."' /usr/lib/lua/luci/view/box.htm")
+            luci.sys.exec("sed -i '"..(ID+1).."d' /usr/lib/lua/luci/view/box.htm")
+            luci.http.write("<meta http-equiv=\"refresh\" content=\"0; URL='"..REQUEST_URI.."'\" />")
+            luci.http.close()
+        else
+            luci.sys.exec("echo '"..title.."！$.$！"..hert.."' >> /usr/lib/lua/luci/view/box.htm")
+            luci.http.write("<meta http-equiv=\"refresh\" content=\"0; URL='"..REQUEST_URI.."'\" />")
+            luci.http.close()
+        end
+    end
+
+    if box=="del" then
+        local ID = luci.http.formvalue ("ID")
+        luci.sys.exec("sed -i '"..ID.."d' /usr/lib/lua/luci/view/box.htm")
+        luci.http.write("<meta http-equiv=\"refresh\" content=\"0; URL='"..REQUEST_URI.."'\" />")
+        luci.http.close()
+    end
+
+    -- 编辑exc配置
+    luci.sys.exec("touch /usr/lib/lua/luci/view/exc.htm")
+    local exchtm = luci.sys.exec("cat /usr/lib/lua/luci/view/exc.htm")
+    exchtm = string.gsub(exchtm, "\r\n", "!@.@!")
+    exchtm = string.gsub(exchtm, "\n", "!@.@!")
+    local exc = luci.http.formvalue("exc")
+
+
+    if exc=="add" then
+        local title = luci.http.formvalue ("title")
+        local exec = luci.http.formvalue ("exec")
+        local ID = luci.http.formvalue ("ID")
+        -- 禁止特殊符号
+        title = string.gsub(title, "%s+", "")
+        title = string.gsub(title, "<", "")
+        title = string.gsub(title, ">", "")
+        title = string.gsub(title, "！", "")
+        title = string.gsub(title, "\"", "")
+        title = string.sub(title, 1, 12)
+        exec = string.gsub(exec, "<", "")
+        exec = string.gsub(exec, "！", "")
+        exec = string.gsub(exec, "\"", "")
+        if ID ~= "*" then
+            luci.sys.exec("sed -i '"..(ID).." i "..title.."！$.$！"..exec.."' /usr/lib/lua/luci/view/exc.htm")
+            luci.sys.exec("sed -i '"..(ID+1).."d' /usr/lib/lua/luci/view/exc.htm")
+            luci.http.write("<meta http-equiv=\"refresh\" content=\"0; URL='"..REQUEST_URI.."'\" />")
+            luci.http.close()
+        else
+            luci.sys.exec("echo '"..title.."！$.$！"..exec.."' >> /usr/lib/lua/luci/view/exc.htm")
+            luci.http.write("<meta http-equiv=\"refresh\" content=\"0; URL='"..REQUEST_URI.."'\" />")
+            luci.http.close()
+        end
+    end
+
+    if exc=="del" then
+        local ID = luci.http.formvalue ("ID")
+        luci.sys.exec("sed -i '"..ID.."d' /usr/lib/lua/luci/view/exc.htm")
+        luci.http.write("<meta http-equiv =\"refresh\" content=\"0; URL='"..REQUEST_URI.."'\" />")
+        luci.http.close()
+    end
+
+   if exc=="run" then
+        local ID = luci.http.formvalue ("ID")
+        local list = string.split(exchtm, '!@.@!')
+        local list = string.split(list[ID+1], '！$.$！')
+        local title = list[1]
+        -- local exec = list[2].." > /usr/lib/lua/luci/view/exc_log.htm"
+        local exc_log1 = luci.sys.exec(list[2]);
+        -- local exc_log1 = luci.sys.exec("cat /usr/lib/lua/luci/view/exc_log.htm")
+        -- luci.sys.exec("rm -rf /usr/lib/lua/luci/view/exc_log.htm")
+        luci.http.write(list[2])
+        luci.http.write("<br>此处前方无需展示出来<br>")
+        luci.http.write(exc_log1)
+        luci.http.close()
+    end
+
+    local XQSysUtil = require "xiaoqiang.util.XQSysUtil"
+    local XQTopology = require("xiaoqiang.module.XQTopology")
+    local homeUrl = '/'
+    if XQSysUtil.getInitInfo() then
+        homeUrl = luci.dispatcher.build_url("web", "home")
+    end
+    local XQFunction = require("xiaoqiang.common.XQFunction")
+    local router_name = XQFunction.getRouterName()
+    -- ap model
+    local netMode = 0
+    local MeshType = 0
+
+    local mode = XQFunction.getNetMode()
+    if mode == "lanapmode" then
+        netMode = 2
+    elseif mode == "wifiapmode" then
+        netMode = 1
+    elseif mode == "whc_cap" then
+        --mesh主设备
+        netMode = 0
+    elseif mode == "whc_re" then
+         --mesh从设备
+        netMode = 3
+    end
+    local hardware = string.lower( XQSysUtil.getHardware() )
+    local features = require("xiaoqiang.XQFeatures").FEATURES
+    local usbIsSupport = features["hardware"]["usb"]
+    local showTopoLink = 0
+
+
+    local netmod = 0
+    local netmod = XQFunction.getnetmode()
+    local meshVersion = XQFunction.getMeshVersion()
+    local topo_url = "http://miwifi.com/"
+    if meshVersion == "2" and mode == "lanapmode" then
+        netmod = 5
+        local XQLanWanUtil = require("xiaoqiang.util.XQLanWanUtil")
+        ip = XQLanWanUtil.getLanIp()
+        topo_url = "http://" .. ip .. "/cgi-bin/luci/web/topo"
+    end
+    --4 mesh主设备  whc_cap
+    --3 mesh从设备  whc_re
+    --5 mesh lanap mode
+    --0 router
+
+
+    local topo = XQTopology.topologicalGraph()
+    local leafs = topo["leafs"]
+    if leafs and #leafs > 0 then
+        showTopoLink = 1
+    end
+
+%>
+<noscript>
+<div class="noscript"><%:你的浏览器禁止了Javascript功能，会造成无法使用系统进行路由器管理，请开启。%></div>
+</noscript>
+<script>
+var GLOBALHEADER = true;
+</script>
+<div id="hd">
+    <div class="inner">
+        <div class="mod-head clearfix">
+            <h1 id="logo"><a href="<%=homeUrl%>"><img src="<%=resource%>/web/img/logo.png?v=<%=ver%>" alt="<%:小米路由器%>"></a></h1>
+            <div id="nav">
+                <!-- <%:netMode header=%><%=netMode%> -->
+                <%if netMode == 0 then%>
+                <ul>
+                    <li style="margin-right: 40px;" <%if string.find(REQUEST_URI, "/home") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web", "home")%>"><%:路由状态%></a></li>
+                    <%if usbIsSupport == '1' then%>
+                    <li style="margin-right: 40px;" <%if string.find(REQUEST_URI, "/store") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web", "store")%>"><%:存储状态%></a></li>
+                    <%end%>
+                    <li style="margin-right: 40px;" <%if string.find(REQUEST_URI, "/setting") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web", "setting", "wifi")%>"><%:常用设置%></a></li>
+                    <li style="margin-right: 40px;" <%if string.find(REQUEST_URI, "/prosetting") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web","prosetting","qos")%>"><%:高级设置%></a></li>
+                    <li style="margin-right: 40px;" <%if string.find(REQUEST_URI, "/axins") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web","axins")%>\">docker</a></li>
+                    <li style="margin-right: 40px;" <%if string.find(REQUEST_URI, "/box") then%>class="active"<%end%>><a href="#" id="box" onclick="openbox(this)">扩展功能</a></li>
+<script type="text/tmpl" id="box_html">
+    <p>常用工具箱 (绿色运行中，灰色未运行，蓝色未知)</p><br>
+    <div class="mod-set-nav mod-set-nav-pro" style="padding-top: 0px;" id="dialog_box">
+        <ul class="clearfix li-6" id="dialog_box_ul">
+            <li style="height: 90px;"><a href="javascript:openbox_edit()"><div class="circle" style="background:#2673bf">管理</div></a></li>
+        </ul>
+    </div>
+    <p>免密登录</p><br>
+    <div id="dialog_mac">
+        <div style="padding-top:10px;display:inline-block">
+            <button onclick="openmac_edit()" class="mesh_buttons" style="color: #fff;background-color: #2673bf;border: 1px #115ba6 solid;">新增名单</button>
+        </div>
+    </div>
+    <br><p>常用命令集</p>
+    <div id="dialog_exc">
+        <div style="padding-top:10px;display:inline-block">
+            <button onclick="openexc_edit()" class="mesh_buttons" style="color: #fff;background-color: #2673bf;border: 1px #115ba6 solid;">管理</button>
+        </div>
+    </div>
+</script>
+<script type="text/tmpl" id="box_edit_html">
+        <div class="mod-set-nav mod-set-nav-pro" style="padding-top: 0px;" id="dialog_box_edit">
+            <form action="#" id="box_new" method="post">
+                <input type="text" name="box" value="add" style="display:none;">
+                <input type="text" name="ID" readonly="readonly" value="*" style="width:14px"></i>&nbsp;
+                名称：<input type="text" name="title" value="" style="width:70px">&nbsp;
+                链接：<input type="text" name="hert" value="" style="width:270px">&nbsp;
+                <input type="submit" value="新增"><br><br>
+            </form>
+        </div>
+    <p>简介：扩展功能，自行添加，名称最多8个字符，无需其他设置。</p>
+</script>
+<script type="text/tmpl" id="mac_edit_html">
+        <div class="mod-set-nav mod-set-nav-pro" style="padding-top: 0px;" id="dialog_mac_edit"></div>
+    <p>简介：白名单开启后无需密码直接登录，无需其他设置。</p>
+</script>
+<script type="text/tmpl" id="exc_edit_html">
+        <div class="mod-set-nav mod-set-nav-pro" style="padding-top: 0px;" id="dialog_exc_edit">
+            <form action="#" id="exc_new" method="post">
+                <input type="text" name="exc" value="add" style="display:none;">
+                <input type="text" name="ID" readonly="readonly" value="*" style="width:16px"></i>&nbsp;
+                标题：<input type="text" name="title" value="" style="width:90px">&nbsp;
+                命令：<input type="text" name="exec" value="" style="width:250px">&nbsp;
+                <input type="submit" value="新增"><br><br>
+            </form>
+        </div>
+    <p>简介：常用命令，自行添加，名称最多12个字符，无需其他设置。</p>
+</script>
+<script type="text/javascript">
+//编辑box配置
+    <%
+        --检测状态
+        local list1 = string.split(boxhtm, '!@.@!')
+        local boxhtmx=""
+        for i = 0, #list1-1, 1 do
+            if list1[i]~=nil then
+                c=0
+                local list2 = string.split(list1[i], '！$.$！')
+                list22 = string.gsub(list2[2], "/", ":")
+                local list3 = string.split(list22, ':')
+                if #list3>0 then
+                    for x = 0, #list3, 1 do
+                        if tonumber(list3[x]) and tonumber(list3[x])<65555 then
+                            c=list3[x]
+                            break
+                        end
+                        if x==#list3 then
+                            c=66666
+                            break
+                        end
+                    end
+                end
+                if c==66666 then
+                    list1[i]=list1[i]..'！$.$！'..66666
+                elseif c~=0 and string.find(luci.sys.exec("echo `/bin/netstat -anp |/bin/grep ':"..c.." ' &&echo 已开启状态|| echo 已关闭状态`"), "已开启状态") then
+                    list1[i]=list1[i]..'！$.$！'..c
+                else
+                    list1[i]=list1[i]..'！$.$！'..0
+                end
+                boxhtmx=boxhtmx..list1[i]..'!@.@!'
+            end
+        end
+    %>
+    var colors = ["#999","#30bf30","#2673bf"];
+    var boxdata = "<%=boxhtmx%>"
+    var box_li_title = []
+    var box_li_href = []
+    var box_li_prot = []
+    boxdata = boxdata.split("!@.@!")
+    for (var i = 0; i < boxdata.length; i++) {
+        boxtext=boxdata[i].split("！$.$！");
+        if (boxtext[0]!="") {
+            box_li_title[i]=boxtext[0];
+            box_li_href[i]=boxtext[1];
+            box_li_prot[i]=boxtext[2];
+        }
+    }
+    var excdata = "<%=exchtm%>"
+    var exc_ls_title = []
+    var exc_ls_exc = []
+    excdata = excdata.split("!@.@!")
+    for (var i = 0; i < excdata.length; i++) {
+        exctext=excdata[i].split("！$.$！");
+        if (exctext[0]!="") {
+            exc_ls_title[i]=exctext[0];
+            exc_ls_exc[i]=exctext[1];
+        }
+    }
+    function openbox(e) {
+        var ccode = '<%=ccode%>', content;
+        var content = $('#box_html').html()
+        $.dialog({
+            width: 600,
+            title: '扩展功能',
+            content: content,
+            lock: true
+        });
+        setTimeout(function () {
+            $('.onlineimg').each(function () {
+                var img = new Image();
+                var el = this;
+                var remote = el.src;
+                var local = $(el).attr('src-local');
+                img.onerror = function () {
+                    el.src = local;
+                }
+                img.src = remote;
+            });
+        }, 100);
+        var dialog_box = document.getElementById("dialog_box");
+        var dialog_box_div = dialog_box.getElementsByTagName("div");
+        var dialog_box_ul = document.getElementById("dialog_box_ul");
+        var dialog_box_ul_HTML="";
+        for(var i = 0; i < box_li_title.length; i++){
+            dialog_box_ul_HTML=dialog_box_ul_HTML+"<li style=\"height: 90px;\"><a target=\"_blank\" href=\""+box_li_href[i]+"\"><div class=\"circle\" style=\"background:"+(box_li_prot[i]=="0"?colors[0]:"")+(box_li_prot[i]!="0" && box_li_prot[i]!="66666"?colors[1]:"")+(box_li_prot[i]=="66666"?colors[2]:"")+"\">"+box_li_title[i]+"</div></a></li>";
+        };
+        dialog_box_ul.innerHTML=dialog_box_ul_HTML+dialog_box_ul.innerHTML;
+        for(var i = 0; i < dialog_box_div.length; i++)
+            //dialog_box_div[i].setAttribute("style","background:"+colors[i]+";");
+
+
+        var dialog_mac = document.getElementById("dialog_mac");
+        var dialog_mac_HTML="";
+        for(var i = 0; i < mac_ls_title2.length; i++){
+            dialog_mac_HTML=dialog_mac_HTML+"<form method=\"post\" action=\"#\"><input type=\"text\" name=\"mac\" value=\"del\" style=\"display:none;\"><input style=\"width:14px\" type=\"text\" readonly=\"readonly\" name=\"ID\" value=\""+(i+1)+"\" >&nbsp;&nbsp;name：<input readonly=\"readonly\" type=\"text\" name=\"title\" value=\""+mac_ls_title2[i]+"\" style=\"width:130px\">&nbsp;&nbsp;mac：<input readonly=\"readonly\" type=\"text\" name=\"hert\" value=\""+mac_ls_mac2[i]+"\" style=\"width:200px\">&nbsp;&nbsp;<input type=\"submit\" value=\"删除\"><br><br></form>"
+        };
+        dialog_mac.innerHTML=dialog_mac_HTML+dialog_mac.innerHTML;
+
+
+        var dialog_exc = document.getElementById("dialog_exc");
+        var dialog_exc_HTML="";
+        for(var i = 0; i < exc_ls_title.length; i++){
+            dialog_exc_HTML=dialog_exc_HTML+"<div style=\"padding-top:10px;display:inline-block\"><button onclick=\"openexc('"+i+"')\" style=\"color:#000;background-color: #fafafa;border: 1px #e5e5e5 solid;\" class=\"mesh_buttons\" value=\""+exc_ls_exc[i]+"\">"+exc_ls_title[i]+"</button>&nbsp;</div>";
+        };
+        dialog_exc.innerHTML=dialog_exc_HTML+dialog_exc.innerHTML;
+
+    };
+
+    function openbox_edit(e) {
+        var ccode = '<%=ccode%>', content;
+        var content = $('#box_edit_html').html()
+        $.dialog({
+            width: 600,
+            top:0,
+            title: '扩展功能-管理',
+            content: content,
+            lock: true
+        });
+        setTimeout(function () {
+            $('.onlineimg').each(function () {
+                var img = new Image();
+                var el = this;
+                var remote = el.src;
+                var local = $(el).attr('src-local');
+                img.onerror = function () {
+                    el.src = local;
+                }
+                img.src = remote;
+            });
+        }, 100);
+        var dialog_box_edit = document.getElementById("dialog_box_edit");
+        var dialog_box_edit_div = dialog_box_edit.getElementsByTagName("div");
+        var inner="";
+        for(var i = 0; i < box_li_title.length; i++){
+            inner = inner+"<form method=\"post\" action=\"#\"><input type=\"text\" name=\"box\" value=\"del\" style=\"display:none;\"><input style=\"width:14px\" type=\"text\" readonly=\"readonly\" name=\"ID\" value=\""+(i+1)+"\" >&nbsp;&nbsp;名称：<input  onclick=\"edit_box_input("+(i+1)+")\" readonly=\"readonly\" type=\"text\" name=\"title\" value=\""+box_li_title[i]+"\" style=\"width:70px\">&nbsp;&nbsp;链接：<input onclick=\"edit_box_input("+(i+1)+")\" readonly=\"readonly\" type=\"text\" name=\"hert\" value=\""+box_li_href[i]+"\" style=\"width:270px\">&nbsp;&nbsp;<input type=\"submit\" value=\"删除\"><br><br></form> ";
+        };
+        dialog_box_edit.innerHTML=inner+dialog_box_edit.innerHTML;
+    };
+
+    var macdata2 = "<%=machtm2%>"
+    var macdata3= macdata2
+    var mac_ls_title2 = []
+    var mac_ls_mac2 = []
+    macdata2 = macdata2.split("!@.@!")
+    for (var i = 0; i < macdata2.length; i++) {
+        mactext2=macdata2[i].split("！$.$！");
+        if (mactext2[0]!="") {
+            mac_ls_title2[i]=mactext2[0];
+            mac_ls_mac2[i]=mactext2[1];
+        }
+    }
+
+    var macdata = "<%=machtm%>"
+    var mac_ls_title = []
+    var mac_ls_mac = []
+    macdata = macdata.split("!@.@!")
+    for (var i = 0; i < macdata.length; i++) {
+        mactext=macdata[i].split("！$.$！");
+        if (mactext[0]!="") {
+            mac_ls_title[i]=mactext[3];
+            mac_ls_mac[i]=mactext[1];
+        }
+    }
+    function openmac_edit(e) {
+        var ccode = '<%=ccode%>', content;
+        var content = $('#mac_edit_html').html()
+        $.dialog({
+            width: 600,
+            top:0,
+            title: '常用命令-管理',
+            content: content,
+            lock: true
+        });
+        setTimeout(function () {
+            $('.onlineimg').each(function () {
+                var img = new Image();
+                var el = this;
+                var remote = el.src;
+                var local = $(el).attr('src-local');
+                img.onerror = function () {
+                    el.src = local;
+                }
+                img.src = remote;
+            });
+        }, 100);
+        var dialog_mac_edit = document.getElementById("dialog_mac_edit");
+        var dialog_mac_edit_div = dialog_mac_edit.getElementsByTagName("div");
+        var inner="";
+        for(var i = 0; i < mac_ls_title.length; i++){
+            if (macdata3.indexOf(mac_ls_mac[i])<1) {
+                inner = inner+"<form method=\"post\" action=\"#\"><input type=\"text\" name=\"mac\" value=\"add\" style=\"display:none;\"><input style=\"width:16px\" type=\"text\" readonly=\"readonly\" name=\"ID\" value=\"*\" >&nbsp;&nbsp;name：<input readonly=\"readonly\" type=\"text\" name=\"title\" value=\""+mac_ls_title[i]+"\" style=\"width:90px\">&nbsp;&nbsp;mac：<input readonly=\"readonly\" type=\"text\" name=\"macc\" value=\""+mac_ls_mac[i]+"\" style=\"width:220px\">&nbsp;&nbsp;<input type=\"submit\" value=\"开启\"><br><br></form> ";
+            }
+        };
+        dialog_mac_edit.innerHTML=inner+dialog_mac_edit.innerHTML;
+    };
+
+    function openexc(ID) {
+        var ccode = '<%=ccode%>', content;
+        var content = $('#exc_html').html()
+
+        $.dialog({
+            width: 800,
+            title: '命令执行结果',
+            content: "<div id=\"exc_con_html\" style=\"background-color:#000;color:#fff;\"></div>",
+            lock: true
+        });
+
+        setTimeout(function () {
+            $('.onlineimg').each(function () {
+                var img = new Image();
+                var el = this;
+                var remote = el.src;
+                var local = $(el).attr('src-local');
+                img.onerror = function () {
+                    el.src = local;
+                }
+                img.src = remote;
+            });
+            var data = {"": "run", "ID": ID};
+            ajaxPost('<%=REQUEST_URI%>?exc=run&ID='+ID, {}, function(r) {
+                document.getElementById("exc_con_html").innerHTML=r.split("此处前方无需展示出来")[1]+"<br><br>";
+            });
+        }, 100);
+    };
+    function openexc_edit(e) {
+        var ccode = '<%=ccode%>', content;
+        var content = $('#exc_edit_html').html()
+        $.dialog({
+            width: 600,
+            top:0,
+            title: '常用命令-管理',
+            content: content,
+            lock: true
+        });
+        setTimeout(function () {
+            $('.onlineimg').each(function () {
+                var img = new Image();
+                var el = this;
+                var remote = el.src;
+                var local = $(el).attr('src-local');
+                img.onerror = function () {
+                    el.src = local;
+                }
+                img.src = remote;
+            });
+        }, 100);
+        var dialog_exc_edit = document.getElementById("dialog_exc_edit");
+        var dialog_exc_edit_div = dialog_exc_edit.getElementsByTagName("div");
+        var inner="";
+        for(var i = 0; i < exc_ls_title.length; i++){
+            inner = inner+"<form method=\"post\" action=\"#\"><input type=\"text\" name=\"exc\" value=\"del\" style=\"display:none;\"><input style=\"width:16px\" type=\"text\" readonly=\"readonly\" name=\"ID\" value=\""+(i+1)+"\" >&nbsp;&nbsp;标题：<input  onclick=\"edit_exc_input("+(i+1)+")\" readonly=\"readonly\" type=\"text\" name=\"title\" value=\""+exc_ls_title[i]+"\" style=\"width:90px\">&nbsp;&nbsp;命令：<input onclick=\"edit_exc_input("+(i+1)+")\" readonly=\"readonly\" type=\"text\" name=\"exec\" value=\""+exc_ls_exc[i]+"\" style=\"width:250px\">&nbsp;&nbsp;<input type=\"submit\" value=\"删除\"><br><br></form> ";
+        };
+        dialog_exc_edit.innerHTML=inner+dialog_exc_edit.innerHTML;
+    };
+
+    // 执行ssh
+    // var url = 'http://192.168.2.1:5913/cmd/《ID》?wait=10';
+    // var data = {username: 'root', password: '《密码》', cmd: 'ls', params:["/tmp/"]};
+    // res = start_shh(url,data);
+    function start_shh(url,data) {ajaxPost(url, JSON.stringify(data), function(r) { return r; })}
+
+
+    // 编辑按钮
+    function edit_box_input(ID) {
+        var box_new_list = document.getElementById("box_new");
+        box_new_list.children[1].innerHTML = ID;
+        box_new_list.children[1].value = ID;
+        box_new_list.children[2].value = box_li_title[ID-1];
+        box_new_list.children[3].value = box_li_href[ID-1];
+        box_new_list.children[4].value = "保存";
+    }
+    // 编辑按钮
+    function edit_exc_input(ID) {
+        var box_new_list = document.getElementById("exc_new");
+        box_new_list.children[1].innerHTML = ID;
+        box_new_list.children[1].value = ID;
+        box_new_list.children[2].value = exc_ls_title[ID-1];
+        box_new_list.children[3].value = exc_ls_exc[ID-1];
+        box_new_list.children[4].value = "保存";
+    }
+    // ajax 对象
+    function ajaxObject() {
+        var xmlHttp;
+        try {
+            // Firefox, Opera 8.0+, Safari
+            xmlHttp = new XMLHttpRequest();
+            }
+        catch (e) {
+            // Internet Explorer
+            try {
+                    xmlHttp = new ActiveXObject("Msxml2.XMLHTTP");
+                } catch (e) {
+                try {
+                    xmlHttp = new ActiveXObject("Microsoft.XMLHTTP");
+                } catch (e) {
+                    alert("您的浏览器不支持AJAX！");
+                    return false;
+                }
+            }
+        }
+        return xmlHttp;
+    }
+    // ajax post请求：
+    function ajaxPost ( url , data , fnSucceed , fnFail , fnLoading ) {
+        var ajax = ajaxObject();
+        ajax.open( "post" , url , true );
+        ajax.setRequestHeader( "Content-Type" , "application/x-www-form-urlencoded" );
+        ajax.onreadystatechange = function () {
+            if( ajax.readyState == 4 ) {
+                if( ajax.status == 200 ) {
+                    fnSucceed( ajax.responseText );
+                }
+                else {
+                    fnFail( "HTTP请求错误！错误码："+ajax.status );
+                }
+            }
+            else {
+                // fnLoading();
+            }
+        }
+        ajax.send( data );
+
+    }
+    var base64DecodeChars = new Array(
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1,
+      -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, -1, 62, -1, -1, -1, 63,
+      52, 53, 54, 55, 56, 57, 58, 59, 60, 61, -1, -1, -1, -1, -1, -1,
+      -1,  0,  1,  2,  3,  4,  5,  6,  7,  8,  9, 10, 11, 12, 13, 14,
+      15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, -1, -1, -1, -1, -1,
+      -1, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40,
+      41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, -1, -1, -1, -1, -1);
+    function base64decode(str){
+        var c1, c2, c3, c4;
+        var i, len, out;
+        len = str.length;
+        i = 0;
+        out = "";
+        while (i < len) {
+            /* c1 */
+            do {
+                c1 = base64DecodeChars[str.charCodeAt(i++) & 0xff];
+            }
+            while (i < len && c1 == -1);
+            if (c1 == -1)
+                break;
+            /* c2 */
+            do {
+                c2 = base64DecodeChars[str.charCodeAt(i++) & 0xff];
+            }
+            while (i < len && c2 == -1);
+            if (c2 == -1)
+                break;
+            out += String.fromCharCode((c1 << 2) | ((c2 & 0x30) >> 4));
+            /* c3 */
+            do {
+                c3 = str.charCodeAt(i++) & 0xff;
+                if (c3 == 61)
+                    return out;
+                c3 = base64DecodeChars[c3];
+            }
+            while (i < len && c3 == -1);
+            if (c3 == -1)
+                break;
+            out += String.fromCharCode(((c2 & 0XF) << 4) | ((c3 & 0x3C) >> 2));
+            /* c4 */
+            do {
+                c4 = str.charCodeAt(i++) & 0xff;
+                if (c4 == 61)
+                    return out;
+                c4 = base64DecodeChars[c4];
+            }
+            while (i < len && c4 == -1);
+            if (c4 == -1)
+                break;
+            out += String.fromCharCode(((c3 & 0x03) << 6) | c4);
+        }
+        return out;
+    }
+    /**
+     * utf16转utf8
+     * @param {Object} str
+     */
+    function utf16to8(str){
+        var out, i, len, c;
+        out = "";
+        len = str.length;
+        for (i = 0; i < len; i++) {
+            c = str.charCodeAt(i);
+            if ((c >= 0x0001) && (c <= 0x007F)) {
+                out += str.charAt(i);
+            }
+            else
+                if (c > 0x07FF) {
+                    out += String.fromCharCode(0xE0 | ((c >> 12) & 0x0F));
+                    out += String.fromCharCode(0x80 | ((c >> 6) & 0x3F));
+                    out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                }
+                else {
+                    out += String.fromCharCode(0xC0 | ((c >> 6) & 0x1F));
+                    out += String.fromCharCode(0x80 | ((c >> 0) & 0x3F));
+                }
+        }
+        return out;
+    }
+    /**
+     * utf8转utf16
+     * @param {Object} str
+     */
+    function utf8to16(str){
+        var out, i, len, c;
+        var char2, char3;
+        out = "";
+        len = str.length;
+        i = 0;
+        while (i < len) {
+            c = str.charCodeAt(i++);
+            switch (c >> 4) {
+                case 0:
+                case 1:
+                case 2:
+                case 3:
+                case 4:
+                case 5:
+                case 6:
+                case 7:
+                    // 0xxxxxxx
+                    out += str.charAt(i - 1);
+                    break;
+                case 12:
+                case 13:
+                    // 110x xxxx 10xx xxxx
+                    char2 = str.charCodeAt(i++);
+                    out += String.fromCharCode(((c & 0x1F) << 6) | (char2 & 0x3F));
+                    break;
+                case 14:
+                    // 1110 xxxx10xx xxxx10xx xxxx
+                    char2 = str.charCodeAt(i++);
+                    char3 = str.charCodeAt(i++);
+                    out += String.fromCharCode(((c & 0x0F) << 12) | ((char2 & 0x3F) << 6) | ((char3 & 0x3F) << 0));
+                    break;
+            }
+        }
+        return out;
+    }
+</script>
+<style>
+        .circle {
+            width: 66px;
+            height: 66px;
+            border-radius: 4em;
+            background: #999;
+            color: #FFFFFF;
+            font-size: 16px;
+            text-align:center;
+            line-height:66px;
+
+        }
+</style>
+                </ul>
+                <%elseif netMode==3 then%>
+                <ul>
+                    <li <%if string.find(REQUEST_URI, "/home") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web", "home")%>"><%:子Mesh状态%></a></li>
+                    <%if usbIsSupport == '1' then%>
+                    <li <%if string.find(REQUEST_URI, "/store") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web", "store")%>"><%:存储状态%></a></li>
+                    <%end%>
+                    <li <%if string.find(REQUEST_URI, "/apsetting") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web", "apsetting", "upgrade")%>"><%:子Mesh设置%></a></li>
+                </ul>
+                <%else%>
+                <ul>
+                    <li <%if string.find(REQUEST_URI, "/home") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web", "home")%>"><%:中继状态%></a></li>
+                    <%if usbIsSupport == '1' then%>
+                    <li <%if string.find(REQUEST_URI, "/store") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web", "store")%>"><%:存储状态%></a></li>
+                    <%end%>
+                    <li <%if string.find(REQUEST_URI, "/apsetting") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web", "apsetting", "wifi")%>"><%:中继设置%></a></li>
+                </ul>
+                <%end%>
+            </div>
+            <div id="userbar">
+
+
+                <%if (netmod == 4 or netmod == 0 or netmod == 5)then%>
+                   <span id="addMesh" style="cursor:pointer;margin-top:6px;margin-left:15px"><%:添加Mesh节点路由%></span>
+                <%end%>
+
+                <span id="sysmenu" class="name s-dropdown"><%=router_name%></span>
+                <span id="sysnotice" class="ico-notice"></span>
+            </div>
+            <div class="see-network">
+                <%if (hardware == "d01")then%>
+                    <span class="goto-topo"><a href="http://miwifi.com/" target="_blank"><%:查看网络拓扑图%></a></span>
+                <%end%>
+                <%if (showTopoLink==1 and hardware~="d01") then%>
+                    <span class="goto-topo"><a href="<%=topo_url%>" target="_blank"><%:查看完整网络%></a></span>
+                <%end%>
+            </div>
+        </div>
+
+        <%if string.find(REQUEST_URI, "/setting") then%>
+        <div class="mod-set-nav">
+            <ul class="clearfix li-5">
+                <li <%if string.find(REQUEST_URI, "/wifi") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "setting", "wifi")%>">
+                        <i class="ico ico-1"></i>
+                        <span><%:Wi-Fi设置%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/wan") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "setting", "wan")%>">
+                        <i class="ico ico-2"></i>
+                        <span><%:上网设置%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/safe") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "setting", "safe")%>">
+                        <i class="ico ico-3"></i>
+                        <span><%:安全中心%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/lannetset") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "setting", "lannetset")%>">
+                        <i class="ico ico-4"></i>
+                        <span><%:局域网设置%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/upgrade") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "setting", "upgrade")%>">
+                        <i class="ico ico-5"></i>
+                        <span><%:系统状态%></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <%end%>
+
+        <%if string.find(REQUEST_URI, "/apsetting") then%>
+        <div class="mod-set-nav mod-ap-set-nav">
+            <%if hardware == "r3a" or hardware == "r3g" or hardware == "r4ac" then%>
+            <ul class="clearfix li-5">
+                <li <%if string.find(REQUEST_URI, "/wifi") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "wifi")%>">
+                        <i class="ico ico-1"></i>
+                        <span><%:Wi-Fi设置%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/wan") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "wan")%>">
+                        <i class="ico ico-2"></i>
+                        <span><%:上网设置%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/safe") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "safe")%>">
+                        <i class="ico ico-3"></i>
+                        <span><%:安全中心%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/upgrade") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "upgrade")%>">
+                        <i class="ico ico-5"></i>
+                        <span><%:系统状态%></span>
+                    </a>
+                </li>
+
+                <li <%if string.find(REQUEST_URI, "/roam") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "roam")%>">
+                        <i class="ico ico-7"></i>
+                        <span><%:其他%></span>
+                    </a>
+                </li>
+            </ul>
+             <%elseif (hardware == "d01" and netMode == 3 ) then%>
+             <ul class="clearfix li-1">
+              <li <%if string.find(REQUEST_URI, "/upgrade") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "upgrade")%>">
+                        <i class="ico ico-5"></i>
+                        <span><%:系统状态%></span>
+                    </a>
+                </li>
+             </ul>
+            <%elseif ((hardware == "rm1800" or hardware == "ra70") and netmod == 3 ) then%>
+             <ul class="clearfix li-2">
+
+<!--                <li <%if string.find(REQUEST_URI, "/safe") then%>class="active"<%end%>>-->
+<!--                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "safe")%>">-->
+<!--                        <i class="ico ico-3"></i>-->
+<!--                        <span><%:安全中心%></span>-->
+<!--                    </a>-->
+<!--                </li>-->
+              <li <%if string.find(REQUEST_URI, "/upgrade") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "upgrade")%>">
+                        <i class="ico ico-5"></i>
+                        <span><%:系统状态%></span>
+                    </a>
+                </li>
+             </ul>
+
+            <%else%>
+            <ul class="clearfix li-4">
+                <li <%if string.find(REQUEST_URI, "/wifi") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "wifi")%>">
+                        <i class="ico ico-1"></i>
+                        <span><%:Wi-Fi设置%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/wan") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "wan")%>">
+                        <i class="ico ico-2"></i>
+                        <span><%:上网设置%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/safe") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "safe")%>">
+                        <i class="ico ico-3"></i>
+                        <span><%:安全中心%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/upgrade") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "apsetting", "upgrade")%>">
+                        <i class="ico ico-5"></i>
+                        <span><%:系统状态%></span>
+                    </a>
+                </li>
+            </ul>
+            <%end%>
+        </div>
+        <%end%>
+
+        <%if string.find(REQUEST_URI, "/prosetting") then%>
+        <div class="mod-set-nav mod-set-nav-pro">
+            <ul class="clearfix li-6">
+
+                <li <%if string.find(REQUEST_URI, "/qos")  then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web","prosetting","qos")%>">
+                        <i class="ico ico-6"></i>
+                        <span><%:QoS智能限速%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/ddns") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "prosetting", "ddns")%>">
+                        <i class="ico ico-9"></i>
+                        <span><%:DDNS%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/nat")  then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "prosetting", "nat")%>">
+                        <i class="ico ico-10"></i>
+                        <span><%:端口转发%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/vpn") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "prosetting", "vpn")%>">
+                        <i class="ico ico-11"></i>
+                        <span><%:VPN%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/docker") then%>class="active"<%end%>>
+                    <a href="<%=luci.dispatcher.build_url("web", "prosetting", "docker")%>">
+                        <i class="ico ico-13"></i>
+                        <span><%:DOCKER%></span>
+                    </a>
+                </li>
+                <li <%if string.find(REQUEST_URI, "/upnp") then%>class="active"<%end%>><a href="<%=luci.dispatcher.build_url("web","prosetting","upnp")%>">
+                        <i class="ico ico-7"></i>
+                       <span><%:其他%></span>
+                    </a>
+                </li>
+            </ul>
+        </div>
+        <%end%>
+
+        <%if string.find(REQUEST_URI, "/store") then%>
+            <%include("web/inc/storeheader")%>
+        <%end%>
+    </div>
+</div>
+
+<script type="tmpl/html" id="tmplMeshMode">
+<div class="netmode-switch-dialog-cont">
+    <div class="switch-step step-select" id="mesh-select" style="display:block;overflow:hidden">
+        <div class="mesh_title"><%:添加Mesh节点路由%></div>
+        <div class="mesh_content">
+            1. 将要添加的Mesh节点路由放置主Mesh路由附近；<br/>
+            2. 与主Mesh路由距离不超过3米；<br/>
+            3. 接通电源，等待路由器系统指示灯变为白/蓝色；
+        </div>
+        <button class="mesh_buttons" id="mesh_search">开始搜索</button>
+    </div>
+
+    <div id="mesh-overMaxLength" class="switch-step">
+         <div class="mesh_title"><%:温馨提示%></div>
+         <div class="mesh_content">
+              <p class="content">
+             为保证Mesh网络良好的使用体验，当前至多可支持10台Mesh路由器组网，更多Mesh路由器建议组成新的Mesh网络。
+              </p>
+          </div>
+           <button class="mesh_buttons" id="mesh-close-button">知道了</button>
+    </div>
+
+     <div id="mesh-Off-5G" class="switch-step">
+         <div class="mesh_title"><%:添加Mesh节点%></div>
+         <div class="mesh_content">
+              <p class="content">
+             搜索并添加Mesh节点时，请先到Wi-Fi设置页面，开启所有Wi-Fi频段。
+              </p>
+          </div>
+           <button class="mesh_buttons" id="setting-5G-button">去开启</button>
+
+    </div>
+
+    <div class="switch-step step-search-loading" id="mesh-search-loading">
+        <div class="mesh_title"><%:搜索要添加的Mesh节点路由%></div>
+        <img id="loading_mesh" src="<%=resource%>/web/img/mesh_loading.png"/>
+        <div class="mesh_content" style="text-align:center">搜索Mesh节点路由...</div>
+        <button class="mesh_buttons" id="mesh_search_cancle">取消</button>
+    </div>
+
+
+    <div class="switch-step step-search-lists"  id="mesh-search-lists">
+        <div class="mesh_title"><%:选择要添加的Mesh节点路由%></div>
+        <div class="list_box"></div>
+        <button class="mesh_Dbuttons mesh_add_Dbuttons " id="show_locate_select">添加</button>
+        <button class="mesh_Dbuttons mesh_research_Dbuttons" id="mesh-research-btn">重试</button>
+    </div>
+
+    <div id="mesh_list_length0"  class="switch-step">
+      <div class="mesh_title"><%:未找到可用的Mesh节点路由%></div>
+      <img class="fail_me" src="<%=resource%>/web/img/mesh_fail.png"/>
+      <div class="mesh_content">
+          <p class="content">
+          未找到可用的Mesh节点，请确认：<br/>
+            1.确认要添加的路由器支持Mesh功能；<br/>
+            2.将要添加的Mesh节点路由升级至最新版本；<br/>
+            3.将要添加的Mesh节点路由靠近主Mesh路由器；<br/>
+            4. 将要添加的Mesh节点路由上电；<br/>
+            5. 长按Reset按键恢复至出厂状态后重试
+          </p>
+      </div>
+      <button class="mesh_buttons" id="mesh_re_search">重新搜索</button>
+    </div>
+
+
+    <div class="switch-step step-add-loading"  id="mesh-add-loading">
+        <div class="mesh_title"><%:正在扩展Mesh网络%></div>
+        <img id="loading_mesh" src="<%=resource%>/web/img/mesh_loading.png"/>
+        <p class="head"><%:正在连接Mesh节点路由...%></p>
+    </div>
+
+    <div class="switch-step step-add-success"  id="mesh-add-success">
+        <div class="mesh_title"><%:Mesh网络扩展成功%></div>
+        <img class="success_me" src="<%=resource%>/web/img/mesh_success.png"/>
+        <div class="mesh_content">
+             恭喜您，Wi-Fi覆盖增强！<br/>
+            1. 将新增Mesh节点路由放置在需要覆盖的地方。<br/>
+            2. 需等待一段时间后，新增路由会出现在管理列表中。<br/>
+            3. 新增Mesh节点路由Wi-Fi信息与之前保持一致！
+        </div>
+        <button class="mesh_buttons" id="mesh_add_success"><%:完成%></button>
+    </div>
+
+    <div class="switch-step step-add-failer"  id="mesh-add-failer">
+    <div class="mesh_title"><%:Mesh网络扩展失败%></div>
+        <img class="fail_me" src="<%=resource%>/web/img/mesh_fail.png"/>
+        <div class="mesh_content">
+          <%:1.将要添加的Mesh节点路由靠近主Mesh路由器。%><br/>
+          <%:2.将要添加的Mesh节点路由恢复出厂后，重试%>
+        </div>
+        <button class="mesh_buttons" id="mesh_re_try">重试</button>
+    </div>
+    <div id="mesh-local" class="switch-step" style="display:none;">
+      <div class="mesh_title"><%:选择放置的位置%></div>
+      <div class="mesh_content">
+      <div class="form-item-select">
+        <select id="locateSelect" name="locateSelect" class="beautify">
+          <option selected value="客厅">客厅</option>
+          <option value="主卧">主卧</option>
+          <option value="次卧">次卧</option>
+          <option value="书房">书房</option>
+          <option value="厨房">厨房</option>
+          <option value="办公室">办公室</option>
+          <option value="地下室">地下室</option>
+          <option value="卫生间">卫生间</option>
+          <option value="阁楼">阁楼</option>
+          <option value="阳台">阳台</option>
+          <option value="餐厅">餐厅</option>
+        </select>
+      </div>
+      </div>
+      <button class="mesh_buttons" id="mesh_search_add">确认</button>
+    </div>
+</div>
+</script>

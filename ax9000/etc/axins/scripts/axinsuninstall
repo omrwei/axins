@@ -1,0 +1,27 @@
+#!/bin/sh
+#----------------------------------------------------------------
+# Shell Name：axinstall
+# Description：Plug-in install script
+# Author：axins
+# Version: 1.0.1
+# Setup Address: axinsinstall.sh
+#----------------------------------------------------------------*/
+mount -o remount,rw /
+#原网页目录
+WEBPATH1="/usr/lib/lua/luci/view/web"
+#原脚本目录
+LUAPATH1="/usr/lib/lua/luci/controller"
+#新网页目录
+WEBPATH2="/etc/axins/view/web"
+#新脚本目录
+LUAPATH2="/etc/axins/controller"
+
+#新增web和api,替换系统文件并备份
+rm -rf $WEBPATH1/sysauth.htm >/dev/null 2>&1
+rm -rf $WEBPATH1/inc/header.htm >/dev/null 2>&1
+rm -rf $LUAPATH1/api/axins.lua >/dev/null 2>&1
+rm -rf $LUAPATH1/web/axind.lua >/dev/null 2>&1
+mv $WEBPATH1/sysauth.axinbak $WEBPATH1/sysauth.htm
+mv $WEBPATH2/inc/header.axinbak $WEBPATH2/inc/header.htm
+rm -rf /etc/axins
+rm -rf /tmp/luci-modulecache/* /tmp/luci-index
